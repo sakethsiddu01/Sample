@@ -6,9 +6,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-  
-  # This tells Terraform to save your state file in your S3 bucket
-  backend "s3" {} 
 }
 
 provider "aws" {
