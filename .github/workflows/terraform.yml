@@ -3,45 +3,42 @@ name: "AWS EC2 Terraform Deployment"
 on:
   push:
     branches:
-      - main # Triggers the pipeline automatically whenever you push code to the main branch
+      - main # Automatically runs when you save files to the main branch
 
 jobs:
   terraform:
     name: "Terraform Run"
     runs-on: ubuntu-latest
 
-    # This injects the GitHub Secrets you saved in Step 1 directly into the pipeline environment
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: "ap-south-1" # Your target region (Mumbai)
+      AWS_REGION: "ap-south-1" # Targets your close Mumbai data center
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true" # Clears the Node.js warning loop cleanly
 
     steps:
-      # Step A: Pulls your code from the GitHub repository onto the runner machine
+      # Step A: Clones your repository files onto the GitHub automation agent
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step B: Installs the official, stable HashiCorp Terraform CLI engine binaries
+      # Step B: Installs the official HashiCorp Terraform CLI binary tool
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform-version: "1.5.7"
+          terraform_version: "1.5.7"
 
-      # Step C: Initializes the S3 backend dynamically without plugin wrapper bugs
+      # Step C: Initializing the S3 tracking backend directly from the root folder
       - name: Terraform Init
-        working-directory: ./terraform
         run: |
           terraform init \
             -backend-config="bucket=terraform9177093193" \
             -backend-config="key=dev/ec2-demo.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}"
 
-      # Step D: Runs a dry-run execution plan to see what resources will be built
+      # Step D: Compiles a verification dry-run plan block
       - name: Terraform Plan
-        working-directory: ./terraform
         run: terraform plan
 
-      # Step E: Automatically approves and provisions your EC2 instance into AWS
+      # Step E: Triggers live cloud delivery directly inside your AWS profile sandbox
       - name: Terraform Apply
-        working-directory: ./terraform
         run: terraform apply -auto-approve
