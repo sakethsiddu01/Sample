@@ -11,9 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # PASTE YOUR RAW AWS KEYS DIRECTLY IN THE QUOTES BELOW
-      AWS_ACCESS_KEY_ID: "AKIAVNA5C2LZ336FLTMU"
-      AWS_SECRET_ACCESS_KEY: "Zm0gcYIcPovUakaLThXAQmJz+hHK7Xiine1peQwE"
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: "ap-south-1"
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -28,7 +27,8 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init
-        run:  terraform init 
+        run: terraform init
+
       - name: Terraform Plan
         run: terraform plan
 
