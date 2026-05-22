@@ -3,7 +3,7 @@ name: "AWS EC2 Terraform Deployment"
 on:
   push:
     branches:
-      - main # Automatically runs when you save files to the main branch
+      - main
 
 jobs:
   terraform:
@@ -11,34 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: "ap-south-1" # Targets your close Mumbai data center
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true" # Clears the Node.js warning loop cleanly
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
-      # Step A: Clones your repository files onto the GitHub automation agent
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step B: Installs the official HashiCorp Terraform CLI binary tool
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.5.7"
 
-      # Step C: Initializing the S3 tracking backend directly from the root folder
+      # FIXED: Secrets are now passed directly as environment variables to this exact step
       - name: Terraform Init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           terraform init \
             -backend-config="bucket=terraform9177093193" \
             -backend-config="key=dev/ec2-demo.tfstate" \
-            -backend-config="region=${{ env.AWS_REGION }}"
+            -backend-config="region=ap-south-1"
 
-      # Step D: Compiles a verification dry-run plan block
+      # FIXED: Secrets passed directly to the Plan step
       - name: Terraform Plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform plan
 
-      # Step E: Triggers live cloud delivery directly inside your AWS profile sandbox
+      # FIXED: Secrets passed directly to the Apply step
       - name: Terraform Apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform apply -auto-approve
