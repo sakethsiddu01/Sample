@@ -10,10 +10,10 @@ jobs:
     name: "Terraform Run"
     runs-on: ubuntu-latest
 
-    # GLOBAL CREDENTIALS: Injects your keys into the entire environment automatically
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # PASTE YOUR RAW AWS KEYS DIRECTLY IN THE QUOTES BELOW
+      AWS_ACCESS_KEY_ID: "AKIAVNA5C2LZ336FLTMU"
+      AWS_SECRET_ACCESS_KEY: "Zm0gcYIcPovUakaLThXAQmJz+hHK7Xiine1peQwE"
       AWS_REGION: "ap-south-1"
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -25,7 +25,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.5.7"
-          terraform_wrapper: false # FIX: Blocks the wrapper from hiding your AWS credentials!
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: |
